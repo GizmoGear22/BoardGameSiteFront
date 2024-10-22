@@ -1,9 +1,10 @@
 ﻿@page "/AdminFront"
+@rendermode InteractiveServer
 
 <h3>AddGame</h3>
 
 <div class="container">
-	<form>
+	<form onsubmit="return false">
 		<label class="form-label" for="boardTitle">Title</label>
 		<input type="text" class="form-control" id="boardTitle"/>
 		<br />
@@ -33,18 +34,19 @@
 		<br />
 
 		<label class="form-label" for="gameTags">Add Game Tags</label>
+		<input type="text" id="gameTags" class="form-control col" @bind=gameTag @bind:event="oninput" />
+		<button type="button" class="btn-primary col" @onclick=AddTags>Add Tag</button>
+		<div class="list-group">
+			@foreach (var tag in tagList)
+			{
+				<h4>@tag</h4>
+			}
+		</div>
 
 	</form>
-	<div class="justify-content-start row">
-		<input type="text" id="gameTags" class="form-control col" @bind=gameTag @bind:event="oninput" />
-		<button class="btn-primary col" @onclick=AddTags>Add Tag</button>
-	</div>
-	<div class="list-group">
-		@foreach (var tag in tagList)
-		{
-			<h4>@tag</h4>
-		}
-	</div>
+
+
+
 </div>
 
 @code {
@@ -54,7 +56,11 @@
 
 	private void AddTags()
 	{
-		tagList.Add(gameTag);
-		gameTag = "";
+		if(!string.IsNullOrWhiteSpace(gameTag))
+		{
+			tagList.Add(gameTag);
+			gameTag = "";
+		}
+
 	}
 }
