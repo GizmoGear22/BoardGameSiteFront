@@ -1,0 +1,60 @@
+﻿@page "/AdminFront"
+
+<h3>AddGame</h3>
+
+<div class="container">
+	<form>
+		<label class="form-label" for="boardTitle">Title</label>
+		<input type="text" class="form-control" id="boardTitle"/>
+		<br />
+
+		<label class="form-label" for="minPlayers">Min Number of Players</label>
+		<select class="form-select">
+			<option>1</option>
+			<option>2</option>
+			<option>3</option>
+			<option>4</option>
+			<option>5</option>
+			<option>6</option>
+			<option>7</option>
+		</select>
+		<br />
+
+		<label class="form-label" for="maxPlayers">Max Number of Players</label>
+		<select class="form-select">
+			<option>1</option>
+			<option>2</option>
+			<option>3</option>
+			<option>4</option>
+			<option>5</option>
+			<option>6</option>
+			<option>7</option>
+		</select>
+		<br />
+
+		<label class="form-label" for="gameTags">Add Game Tags</label>
+
+	</form>
+	<div class="justify-content-start row">
+		<input type="text" id="gameTags" class="form-control col" @bind=gameTag @bind:event="oninput" />
+		<button class="btn-primary col" @onclick=AddTags>Add Tag</button>
+	</div>
+	<div class="list-group">
+		@foreach (var tag in tagList)
+		{
+			<h4>@tag</h4>
+		}
+	</div>
+</div>
+
+@code {
+
+	private List<string> tagList = new List<string>();
+	private string gameTag = string.Empty;
+
+	private void AddTags()
+	{
+		tagList.Add(gameTag);
+		gameTag = "";
+	}
+}

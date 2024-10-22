@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoardGameFront", "BoardGame
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoardGameFront.Client", "BoardGameFront\BoardGameFront.Client\BoardGameFront.Client.csproj", "{78B0FCEA-6C45-45DB-B257-F2D6E983B6CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APILayer", "APILayer\APILayer.csproj", "{76F104C8-B1A1-4981-99F9-98F102D56038}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{11781B38-6740-4217-AE79-D6D381FB2498}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{78B0FCEA-6C45-45DB-B257-F2D6E983B6CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78B0FCEA-6C45-45DB-B257-F2D6E983B6CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78B0FCEA-6C45-45DB-B257-F2D6E983B6CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76F104C8-B1A1-4981-99F9-98F102D56038}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76F104C8-B1A1-4981-99F9-98F102D56038}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76F104C8-B1A1-4981-99F9-98F102D56038}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76F104C8-B1A1-4981-99F9-98F102D56038}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11781B38-6740-4217-AE79-D6D381FB2498}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11781B38-6740-4217-AE79-D6D381FB2498}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11781B38-6740-4217-AE79-D6D381FB2498}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11781B38-6740-4217-AE79-D6D381FB2498}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
