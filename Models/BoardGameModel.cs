@@ -13,8 +13,9 @@ namespace Models
 		[MaxLength(100)]
 		public string name { get; set; }
 		[Required]
-		[MaxLength(10)]
-		public string numberOfPlayers { get; set; }
+		public int minPlayers { get; set; }
+		[Required]
+		public int maxPlayers { get; set; }	
 		[Required]
 		public Difficulty difficulty { get; set; }
 		[MaxLength(1000)]

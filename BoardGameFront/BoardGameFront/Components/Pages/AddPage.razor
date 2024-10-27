@@ -6,11 +6,11 @@
 <div class="container">
 	<form onsubmit="return false">
 		<label class="form-label" for="boardTitle">Title</label>
-		<input type="text" class="form-control" id="boardTitle"/>
+		<input type="text" class="form-control" id="boardTitle" @bind-value=newGame.name />
 		<br />
 
 		<label class="form-label" for="minPlayers">Min Number of Players</label>
-		<select class="form-select">
+		<select class="form-select" @bind-value=newGame.minPlayers>
 			<option>1</option>
 			<option>2</option>
 			<option>3</option>
@@ -30,6 +30,7 @@
 			<option>5</option>
 			<option>6</option>
 			<option>7</option>
+			<option>NA</option>
 		</select>
 		<br />
 
@@ -42,10 +43,22 @@
 				<h4>@tag</h4>
 			}
 		</div>
+		<br />
+
+		<label class="form-label" for="gameDifficulty">Game Difficulty</label>
+		<select class="form-select">
+			<option>Easy</option>
+			<option>Standard</option>
+			<option>Hard</option>
+			<option>Expert</option>
+		</select>
+
+		<label class="form-label">Add Image</label>
+		<input type="file" @bind=gameImage />
+
+		<button type="submit">Submit</button>
 
 	</form>
-
-
 
 </div>
 
@@ -54,13 +67,19 @@
 	private List<string> tagList = new List<string>();
 	private string gameTag = string.Empty;
 
+	private byte[] gameImage { get; set; }
+
+	private BoardGameModel newGame = new BoardGameModel();
+
 	private void AddTags()
 	{
-		if(!string.IsNullOrWhiteSpace(gameTag))
+		if (!string.IsNullOrWhiteSpace(gameTag))
 		{
 			tagList.Add(gameTag);
 			gameTag = "";
 		}
 
 	}
+
+
 }
