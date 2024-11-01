@@ -10,7 +10,7 @@
 		<br />
 
 		<label class="form-label" for="minPlayers">Min Number of Players</label>
-		<select class="form-select" @bind-value=newGame.minPlayers>
+		<select class="form-select" @bind=newGame.minPlayers>
 			<option>1</option>
 			<option>2</option>
 			<option>3</option>
@@ -22,7 +22,7 @@
 		<br />
 
 		<label class="form-label" for="maxPlayers">Max Number of Players</label>
-		<select class="form-select">
+		<select class="form-select" @bind=newGame.maxPlayers>
 			<option>1</option>
 			<option>2</option>
 			<option>3</option>
@@ -46,7 +46,7 @@
 		<br />
 
 		<label class="form-label" for="gameDifficulty">Game Difficulty</label>
-		<select class="form-select">
+		<select class="form-select" @bind=newGame.difficulty>
 			<option>Easy</option>
 			<option>Standard</option>
 			<option>Hard</option>
@@ -55,6 +55,8 @@
 
 		<label class="form-label">Add Image</label>
 		<input type="file" @bind=gameImage />
+
+		<InputFile OnChange="@LoadFiles" />
 
 		<button type="submit">Submit</button>
 
@@ -69,7 +71,14 @@
 
 	private byte[] gameImage { get; set; }
 
-	private BoardGameModel newGame = new BoardGameModel();
+	private long maxFileSize = 1024 * 1024 * 3;
+	private int maxNumberOfFiles = 1;
+
+	private List<string> errors = new();
+
+	BoardGameModel newGame = new BoardGameModel();
+
+	private IBrowserFile? file;
 
 	private void AddTags()
 	{
@@ -78,6 +87,44 @@
 			tagList.Add(gameTag);
 			gameTag = "";
 		}
+
+	}
+
+
+
+	private async Task LoadFiles(InputFileChangeEventArgs e)
+	{
+		if (e.FileCount > maxNumberOfFiles)
+		{
+			errors.Add($"Number of files must be less than {maxNumberOfFiles}");
+		}
+
+		file = e.File;
+	}
+
+	private async void OnSubmit(BoardGameModel gameModel)
+	{
+		var format = "image/png";
+		var resizeImage = await file.RequestImageFileAsync(format, 400, 400);
+
+		string newFileName = Path.GetRandomFileName();
+		string imageExtension = Path.GetExtension(file.Name);
+
+		Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Images"));
+		string path = Path.Combine(Environment.CurrentDirectory, "Images");
+
+		Image newImage = new Image
+			{
+				FileName = newFileName,
+				FilePath = path,
+				ContentType = imageExtension
+			};
+
+			newGame.image = newImage;
+
+		await using FileStream fileStream = new(path, FileMode.Create);
+		await file.OpenReadStream(maxFileSize).CopyToAsync(fileStream);
+
 
 	}
 

@@ -1,3 +1,4 @@
+using APILayer;
 using BoardGameFront.Client.Pages;
 using BoardGameFront.Components;
 
@@ -7,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+//DI
+builder.Services.AddHttpClient<DataHandler>();
 
 var app = builder.Build();
 

@@ -9,38 +9,17 @@ using Models;
 
 namespace APILayer
 {
-	public class DataHandler
+	public class DataHandler : IDataHandler
 	{
 		private readonly HttpClient _httpClient;
 		public DataHandler(HttpClient httpClient)
 		{
-			_httpClient = httpClient; 
-		}
-
-		public string SerializeJson(BoardGameModel boardGame)
-		{
-			var jsonString = JsonSerializer.Serialize(boardGame);
-			return jsonString;
+			_httpClient = httpClient;
 		}
 
 		public async Task<BoardGameModel> PostNewGame(string boardGameJson)
 		{
-			string address = "https://localhost:44328/api/Main/CreateNewGame.html";
-			return await _httpClient.PostAsJsonAsync(address, boardGameJson);
+			throw new NotImplementedException();
 		}
-
-		//public async Task<string> SerializeJson(BoardGameModel boardGame)
-		//{
-		//	string fileName = "NewBoardGame.json";
-		//	await using FileStream createStream = File.Create(fileName);
-		//	var data = await JsonSerializer.SerializeAsync<BoardGameModel>(createStream, boardGame);
-		//	return data;
-		//}
-
-		//public async Task<BoardGameModel> PostNewGame(BoardGameModel model)
-		//{
-		//	string address = "https://localhost:44328/api/Main/CreateNewGame.html";
-		//	return await _httpClient.PostAsJsonAsync(address, stringifiedModel);
-		//}
 	}
 }
