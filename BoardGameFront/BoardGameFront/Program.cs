@@ -10,7 +10,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
 //DI
-builder.Services.AddHttpClient<DataHandler>();
+builder.Services.AddHttpClient("rootApi", c => c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ServerApi")));
 
 var app = builder.Build();
 

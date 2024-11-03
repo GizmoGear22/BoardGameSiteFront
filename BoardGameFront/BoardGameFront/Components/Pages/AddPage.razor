@@ -1,5 +1,6 @@
 ﻿@page "/AdminFront"
 @rendermode InteractiveServer
+@inject IHttpClientFactory _client;
 
 <h3>AddGame</h3>
 
@@ -37,12 +38,7 @@
 		<label class="form-label" for="gameTags">Add Game Tags</label>
 		<input type="text" id="gameTags" class="form-control col" @bind=gameTag @bind:event="oninput" />
 		<button type="button" class="btn-primary col" @onclick=AddTags>Add Tag</button>
-		<div class="list-group">
-			@foreach (var tag in tagList)
-			{
-				<h4>@tag</h4>
-			}
-		</div>
+
 		<br />
 
 		<label class="form-label" for="gameDifficulty">Game Difficulty</label>
@@ -61,6 +57,13 @@
 		<button type="submit">Submit</button>
 
 	</form>
+
+	<div class="list-group">
+		@foreach (var tag in tagList)
+		{
+			<h4>@tag</h4>
+		}
+	</div>
 
 </div>
 
@@ -90,8 +93,6 @@
 
 	}
 
-
-
 	private async Task LoadFiles(InputFileChangeEventArgs e)
 	{
 		if (e.FileCount > maxNumberOfFiles)
@@ -120,10 +121,16 @@
 				ContentType = imageExtension
 			};
 
-			newGame.image = newImage;
+		newGame.image = newImage;
 
 		await using FileStream fileStream = new(path, FileMode.Create);
 		await file.OpenReadStream(maxFileSize).CopyToAsync(fileStream);
+
+		var convertedList = JsonSerializer.Serialize(tagList);
+		newGame.tags = convertedList;
+
+		var client = _client.CreateClient("rootApi");
+		await client.PostAsJsonAsync<BoardGameModel>("CreateNewGame", newGame);
 
 
 	}
