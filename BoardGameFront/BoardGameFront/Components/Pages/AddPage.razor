@@ -5,10 +5,10 @@
 <h3>AddGame</h3>
 
 <div class="container">
-	<form onsubmit="return false">
+	<EditForm Model="newGame" OnValidSubmit="() => OnSubmit(newGame)">
 		<label class="form-label" for="boardTitle">Title</label>
-		<input type="text" class="form-control" id="boardTitle" @bind-value=newGame.name />
-		<br />
+		<input type="text" class="form-control" id="boardTitle" @bind=newGame.name />
+		<br /> 
 
 		<label class="form-label" for="minPlayers">Min Number of Players</label>
 		<select class="form-select" @bind=newGame.minPlayers>
@@ -36,8 +36,17 @@
 		<br />
 
 		<label class="form-label" for="gameTags">Add Game Tags</label>
-		<input type="text" id="gameTags" class="form-control col" @bind=gameTag @bind:event="oninput" />
+
+
+		<input type="text" id="gameTags" class="form-control col" @bind=gameTag @bind:event="onclick"  />
 		<button type="button" class="btn-primary col" @onclick=AddTags>Add Tag</button>
+		@if (newGame.tags != null)
+		{
+			@for (int i = 0; i < newGame.tags.Count; i++)
+			{
+				<input type="text" @bind="newGame.tags[i]" />
+			}
+		}
 
 		<br />
 
@@ -49,30 +58,32 @@
 			<option>Expert</option>
 		</select>
 
-		<label class="form-label">Add Image</label>
-		<input type="file" @bind=gameImage />
+		<InputFile OnChange="@LoadFiles" value="Load Image"/>
 
-		<InputFile OnChange="@LoadFiles" />
+		<label class="form-label" for="gameDescription">Add Description</label>
+		<InputTextArea @bind-Value="newGame.description"/>
 
-		<button type="submit">Submit</button>
+		<button type="submit" class="btn btn-primary">Submit</button>
 
-	</form>
+	</EditForm>
 
 	<div class="list-group">
-		@foreach (var tag in tagList)
+
+		@if (newGame.tags != null)
 		{
-			<h4>@tag</h4>
+			@foreach (var tag in newGame.tags)
+			{
+				<h4>@tag</h4>
+			}
 		}
+
 	</div>
 
 </div>
 
 @code {
 
-	private List<string> tagList = new List<string>();
 	private string gameTag = string.Empty;
-
-	private byte[] gameImage { get; set; }
 
 	private long maxFileSize = 1024 * 1024 * 3;
 	private int maxNumberOfFiles = 1;
@@ -83,11 +94,13 @@
 
 	private IBrowserFile? file;
 
+
+
 	private void AddTags()
 	{
 		if (!string.IsNullOrWhiteSpace(gameTag))
 		{
-			tagList.Add(gameTag);
+			newGame.tags.Add(gameTag);
 			gameTag = "";
 		}
 
@@ -98,8 +111,8 @@
 		if (e.FileCount > maxNumberOfFiles)
 		{
 			errors.Add($"Number of files must be less than {maxNumberOfFiles}");
+			return;
 		}
-
 		file = e.File;
 	}
 
@@ -108,15 +121,17 @@
 		var format = "image/png";
 		var resizeImage = await file.RequestImageFileAsync(format, 400, 400);
 
-		string newFileName = Path.GetRandomFileName();
+		string newFileName = Path.ChangeExtension(Path.GetRandomFileName(), Path.GetExtension(file.Name));
+
 		string imageExtension = Path.GetExtension(file.Name);
+		string currentFileName = Path.GetFileName(file.Name);
 
 		Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Images"));
-		string path = Path.Combine(Environment.CurrentDirectory, "Images");
+		string path = Path.Combine(Environment.CurrentDirectory, "Images", newFileName);
 
 		Image newImage = new Image
 			{
-				FileName = newFileName,
+				FileName = currentFileName,
 				FilePath = path,
 				ContentType = imageExtension
 			};
@@ -126,14 +141,13 @@
 		await using FileStream fileStream = new(path, FileMode.Create);
 		await file.OpenReadStream(maxFileSize).CopyToAsync(fileStream);
 
-		var convertedList = JsonSerializer.Serialize(tagList);
-		newGame.tags = convertedList;
 
 		var client = _client.CreateClient("rootApi");
 		await client.PostAsJsonAsync<BoardGameModel>("CreateNewGame", newGame);
 
 
 	}
+
 
 
 }
