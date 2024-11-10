@@ -21,7 +21,7 @@ namespace Models
 		public List<string>? tags { get; set; }
 		[Required]
 		public string description { get; set; }
-		public Image image { get; set; }
+		public string imageLocation { get; set; }
 
 	}
 

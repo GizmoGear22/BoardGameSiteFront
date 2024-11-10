@@ -74,8 +74,12 @@
 	private async Task<string> CaptureFile()
 	{
 		var newFileName = Path.ChangeExtension(Path.GetRandomFileName(), Path.GetExtension(imageFile.Name));
-		Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Images"));
-		var path = Path.Combine(Environment.CurrentDirectory, "Images", newFileName);
+
+		var userDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+		Directory.CreateDirectory(Path.Combine(userDirectory, "Images"));
+
+		var path = Path.Combine(userDirectory, "Images", newFileName);
 		string relativePath = Path.Combine("Images", newFileName);
 
 		await using FileStream fileStream = new FileStream(path, FileMode.Create);
@@ -91,7 +95,11 @@
 
 		string relativePath = await CaptureFile();
 
-		newImage.FilePath = relativePath;
+		newGame.imageLocation = relativePath;
+
+		var apiConnection = _client.CreateClient("rootApi");
+		var completeConnection = await apiConnection.PostAsJsonAsync<BoardGameModel>("GetAllGames", newGame);
+		Console.WriteLine(completeConnection.ToString);
 
 	}
 
