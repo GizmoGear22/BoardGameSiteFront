@@ -1,153 +1,98 @@
 ﻿@page "/AdminFront"
 @rendermode InteractiveServer
 @inject IHttpClientFactory _client;
+@inject IConfiguration _config;
+
 
 <h3>AddGame</h3>
 
-<div class="container">
-	<EditForm Model="newGame" OnValidSubmit="() => OnSubmit(newGame)">
-		<label class="form-label" for="boardTitle">Title</label>
-		<input type="text" class="form-control" id="boardTitle" @bind=newGame.name />
-		<br /> 
+<EditForm Model="newGame" OnValidSubmit="SubmitGame">
 
-		<label class="form-label" for="minPlayers">Min Number of Players</label>
-		<select class="form-select" @bind=newGame.minPlayers>
-			<option>1</option>
-			<option>2</option>
-			<option>3</option>
-			<option>4</option>
-			<option>5</option>
-			<option>6</option>
-			<option>7</option>
-		</select>
-		<br />
-
-		<label class="form-label" for="maxPlayers">Max Number of Players</label>
-		<select class="form-select" @bind=newGame.maxPlayers>
-			<option>1</option>
-			<option>2</option>
-			<option>3</option>
-			<option>4</option>
-			<option>5</option>
-			<option>6</option>
-			<option>7</option>
-			<option>NA</option>
-		</select>
-		<br />
-
-		<label class="form-label" for="gameTags">Add Game Tags</label>
-
-
-		<input type="text" id="gameTags" class="form-control col" @bind=gameTag @bind:event="onclick"  />
-		<button type="button" class="btn-primary col" @onclick=AddTags>Add Tag</button>
-		@if (newGame.tags != null)
-		{
-			@for (int i = 0; i < newGame.tags.Count; i++)
-			{
-				<input type="text" @bind="newGame.tags[i]" />
-			}
-		}
-
-		<br />
-
-		<label class="form-label" for="gameDifficulty">Game Difficulty</label>
-		<select class="form-select" @bind=newGame.difficulty>
-			<option>Easy</option>
-			<option>Standard</option>
-			<option>Hard</option>
-			<option>Expert</option>
-		</select>
-
-		<InputFile OnChange="@LoadFiles" value="Load Image"/>
-
-		<label class="form-label" for="gameDescription">Add Description</label>
-		<InputTextArea @bind-Value="newGame.description"/>
-
-		<button type="submit" class="btn btn-primary">Submit</button>
-
-	</EditForm>
-
-	<div class="list-group">
-
-		@if (newGame.tags != null)
-		{
-			@foreach (var tag in newGame.tags)
-			{
-				<h4>@tag</h4>
-			}
-		}
-
+	<div>
+		<label for="gameName" class="form-label">Title</label>
+		<InputText @bind-value="newGame!.name" class="form-control" id="gameName" ValueExpression="() => newGame.name"/>
 	</div>
 
-</div>
+	<div>
+		<label class="form-label" for="minPlayers">Minimum Number of Players
+		<InputSelect @bind-Value="newGame.minPlayers" class="form-select" id="minPlayers">
+			<option value="1">1</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
+			<option value="4">4</option>
+			<option value="5">5</option>
+			<option value="6">6</option>
+		</InputSelect>
+		</label>
+	</div>
+
+	<div>
+		<label class="form-label" for="maxPlayers">Maximum Number of Players</label>
+		<InputSelect @bind-Value="newGame.maxPlayers" class="form-select" id="manPlayers">
+			<option value="2">2</option>
+			<option value="3">3</option>
+			<option value="4">4</option>
+			<option value="5">5</option>
+			<option value="6">6</option>
+		</InputSelect>
+	</div>
+
+	<label class="form-label" for="difficulty">Game Difficulty</label>
+	<InputSelect @bind-Value="newGame.difficulty" class="form-select" id="gameDifficulty">
+		@foreach(var difficulty in Enum.GetValues<Difficulty>())
+		{
+			<option value="@difficulty">@difficulty</option>
+		}
+	</InputSelect>
+
+	<label class="form-label" for="tags">Game Tags</label>
+
+	<div>
+		<label for="gameImage" class="form-label">Upload Image</label>
+		<InputFile OnChange="@FileUpload"></InputFile>
+	</div>
+
+	<button class="btn btn-primary" type="submit">Submit Game</button>
+</EditForm>
 
 @code {
 
-	private string gameTag = string.Empty;
+	public BoardGameModel newGame = new BoardGameModel();
+	public Image newImage = new Image();
 
+	private IBrowserFile imageFile;
 	private long maxFileSize = 1024 * 1024 * 3;
 	private int maxNumberOfFiles = 1;
 
-	private List<string> errors = new();
-
-	BoardGameModel newGame = new BoardGameModel();
-
-	private IBrowserFile? file;
 
 
-
-	private void AddTags()
+	private void FileUpload(InputFileChangeEventArgs e)
 	{
-		if (!string.IsNullOrWhiteSpace(gameTag))
-		{
-			newGame.tags.Add(gameTag);
-			gameTag = "";
-		}
-
+		imageFile = e.File;
 	}
 
-	private async Task LoadFiles(InputFileChangeEventArgs e)
+	private async Task<string> CaptureFile()
 	{
-		if (e.FileCount > maxNumberOfFiles)
-		{
-			errors.Add($"Number of files must be less than {maxNumberOfFiles}");
-			return;
-		}
-		file = e.File;
-	}
-
-	private async void OnSubmit(BoardGameModel gameModel)
-	{
-		var format = "image/png";
-		var resizeImage = await file.RequestImageFileAsync(format, 400, 400);
-
-		string newFileName = Path.ChangeExtension(Path.GetRandomFileName(), Path.GetExtension(file.Name));
-
-		string imageExtension = Path.GetExtension(file.Name);
-		string currentFileName = Path.GetFileName(file.Name);
-
+		var newFileName = Path.ChangeExtension(Path.GetRandomFileName(), Path.GetExtension(imageFile.Name));
 		Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Images"));
-		string path = Path.Combine(Environment.CurrentDirectory, "Images", newFileName);
+		var path = Path.Combine(Environment.CurrentDirectory, "Images", newFileName);
+		string relativePath = Path.Combine("Images", newFileName);
 
-		Image newImage = new Image
-			{
-				FileName = currentFileName,
-				FilePath = path,
-				ContentType = imageExtension
-			};
+		await using FileStream fileStream = new FileStream(path, FileMode.Create);
+		await imageFile.OpenReadStream(maxFileSize).CopyToAsync(fileStream);
 
-		newGame.image = newImage;
-
-		await using FileStream fileStream = new(path, FileMode.Create);
-		await file.OpenReadStream(maxFileSize).CopyToAsync(fileStream);
-
-
-		var client = _client.CreateClient("rootApi");
-		await client.PostAsJsonAsync<BoardGameModel>("CreateNewGame", newGame);
-
-
+		return relativePath;
 	}
 
 
+	private async Task SubmitGame()
+	{
+		_client.CreateClient("CreateNewGame");
+
+		string relativePath = await CaptureFile();
+
+		newImage.FilePath = relativePath;
+
+	}
 
 }
