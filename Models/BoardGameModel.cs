@@ -11,17 +11,17 @@ namespace Models
 	{
 		[Required]
 		[MaxLength(100)]
-		public string name { get; set; }
+		public string Name { get; set; }
 		[Required]
-		public int minPlayers { get; set; }
+		public int MinPlayers { get; set; }
 		[Required]
-		public int maxPlayers { get; set; }	
+		public int MaxPlayers { get; set; }	
 		[Required]
-		public Difficulty difficulty { get; set; }
-		public List<string>? tags { get; set; }
+		public Difficulty Difficulty { get; set; }
+		public List<string>? Tags { get; set; }
 		[Required]
-		public string description { get; set; }
-		public string imageLocation { get; set; }
+		public string Description { get; set; }
+		public string ImageLocation { get; set; }
 
 	}
 

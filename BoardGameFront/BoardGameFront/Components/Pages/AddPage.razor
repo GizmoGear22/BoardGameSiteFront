@@ -1,7 +1,7 @@
 ﻿@page "/AdminFront"
 @rendermode InteractiveServer
-@inject IHttpClientFactory _client;
 @inject IConfiguration _config;
+@inject APILayer.DataHandlers.IDataHandler _apiHandler;
 
 
 <h3>AddGame</h3>
@@ -10,35 +10,38 @@
 
 	<div>
 		<label for="gameName" class="form-label">Title</label>
-		<InputText @bind-value="newGame!.name" class="form-control" id="gameName" ValueExpression="() => newGame.name"/>
+		<InputText @bind-value="newGame!.Name" class="form-control" id="gameName" ValueExpression="() => newGame.Name"/>
+	</div>
+	<div class="container">
+		<div>
+			<label class="form-label" for="minPlayers">
+				Minimum Number of Players
+				<InputSelect @bind-Value="newGame.MinPlayers" class="form-select" id="minPlayers">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+				</InputSelect>
+			</label>
+		</div>
+
+		<div>
+			<label class="form-label" for="maxPlayers">Maximum Number of Players</label>
+			<InputSelect @bind-Value="newGame.MaxPlayers" class="form-select" id="manPlayers">
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+			</InputSelect>
+		</div>
 	</div>
 
-	<div>
-		<label class="form-label" for="minPlayers">Minimum Number of Players
-		<InputSelect @bind-Value="newGame.minPlayers" class="form-select" id="minPlayers">
-			<option value="1">1</option>
-			<option value="2">2</option>
-			<option value="3">3</option>
-			<option value="4">4</option>
-			<option value="5">5</option>
-			<option value="6">6</option>
-		</InputSelect>
-		</label>
-	</div>
-
-	<div>
-		<label class="form-label" for="maxPlayers">Maximum Number of Players</label>
-		<InputSelect @bind-Value="newGame.maxPlayers" class="form-select" id="manPlayers">
-			<option value="2">2</option>
-			<option value="3">3</option>
-			<option value="4">4</option>
-			<option value="5">5</option>
-			<option value="6">6</option>
-		</InputSelect>
-	</div>
 
 	<label class="form-label" for="difficulty">Game Difficulty</label>
-	<InputSelect @bind-Value="newGame.difficulty" class="form-select" id="gameDifficulty">
+	<InputSelect @bind-Value="newGame.Difficulty" class="form-select" id="gameDifficulty">
 		@foreach(var difficulty in Enum.GetValues<Difficulty>())
 		{
 			<option value="@difficulty">@difficulty</option>
@@ -46,6 +49,18 @@
 	</InputSelect>
 
 	<label class="form-label" for="tags">Game Tags</label>
+	<InputText class="form-text" @bind-Value=newTag></InputText>
+	<button type="button" @onclick="AddTag">Add Tag</button>
+	<div class="bg-secondary bg-gradient w-25" style="--bs-bg-opacity: 0.5">
+		<ul style="list-style-type: none">
+			@foreach (var item in tagList)
+			{
+				<li>@item</li>
+			}
+		</ul>
+
+	</div>
+
 
 	<div>
 		<label for="gameImage" class="form-label">Upload Image</label>
@@ -60,10 +75,19 @@
 	public BoardGameModel newGame = new BoardGameModel();
 	public Image newImage = new Image();
 
+	private string newTag = "";
+	private List<string> tagList = new List<string>();
+
 	private IBrowserFile imageFile;
 	private long maxFileSize = 1024 * 1024 * 3;
 	private int maxNumberOfFiles = 1;
 
+	private void AddTag()
+	{
+		tagList.Add(newTag);
+		newGame.Tags = tagList;
+		newTag = "";
+	}
 
 
 	private void FileUpload(InputFileChangeEventArgs e)
@@ -91,15 +115,16 @@
 
 	private async Task SubmitGame()
 	{
-		_client.CreateClient("CreateNewGame");
 
 		string relativePath = await CaptureFile();
 
-		newGame.imageLocation = relativePath;
+		newGame.ImageLocation = relativePath;
 
-		var apiConnection = _client.CreateClient("rootApi");
-		var completeConnection = await apiConnection.PostAsJsonAsync<BoardGameModel>("GetAllGames", newGame);
-		Console.WriteLine(completeConnection.ToString);
+		await _apiHandler.PostNewGame(newGame);
+
+		// var apiConnection = _client.CreateClient("rootApi");
+		// var completeConnection = await apiConnection.PostAsJsonAsync<BoardGameModel>("GetAllGames", newGame);
+		// Console.WriteLine(completeConnection.ToString);
 
 	}
 
