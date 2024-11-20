@@ -18,7 +18,7 @@ builder.Services.AddHttpClient<BoardGameModel>("rootApi", c =>
     c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ServerApi"));
     var apiKey = builder.Configuration.GetValue<string>("apiKey");
     c.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
-    c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json")); 
+    //c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json")); 
 });
 
 builder.Services.AddTransient<IDataHandler, DataHandler>();
