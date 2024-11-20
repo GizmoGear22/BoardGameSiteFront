@@ -21,13 +21,26 @@ namespace APILayer.DataHandlers
             _config = config;
         }
 
-        public async Task PostNewGame(BoardGameModel model)
+        public async Task<HttpResponseMessage> PostNewGame(BoardGameModel model)
         {
-            var apiKey = _config.GetValue<string>("apiKey");
+            try
+            {
+                var apiKey = _config.GetValue<string>("apiKey");
 
-            using var dataClient = _client.CreateClient("rootApi");
+                using var dataClient = _client.CreateClient("rootApi");
 
-            var postJson = await dataClient.PostAsJsonAsync<BoardGameModel>("api/Main/CreateNewGame", model);
+                var postJson = await dataClient.PostAsJsonAsync("api/Main/CreateNewGame", model);
+
+                return postJson;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+
+
+
         }
     }
 }

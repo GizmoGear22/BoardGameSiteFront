@@ -3,6 +3,7 @@ using BoardGameFront.Client.Pages;
 using BoardGameFront.Components;
 using APILayer.DataHandlers;
 using Models;
+using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,7 @@ builder.Services.AddHttpClient<BoardGameModel>("rootApi", c =>
     c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ServerApi"));
     var apiKey = builder.Configuration.GetValue<string>("apiKey");
     c.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
-    c.DefaultRequestHeaders.Add("Accept", "application/json");
+    c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json")); 
 });
 
 builder.Services.AddTransient<IDataHandler, DataHandler>();

@@ -4,6 +4,6 @@ namespace APILayer.DataHandlers
 {
     public interface IDataHandler
     {
-        Task PostNewGame(BoardGameModel boardGameJson);
+        Task<HttpResponseMessage> PostNewGame(BoardGameModel boardGameJson);
     }
 }
