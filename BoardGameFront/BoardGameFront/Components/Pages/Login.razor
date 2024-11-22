@@ -1,0 +1,19 @@
+﻿<h3>Login</h3>
+
+<EditForm Model="user">
+	<div class="container">
+		<div>
+			<label for="username" class="form-label">UserName</label>
+			<InputText @bind-Value=user.UserName></InputText>
+		</div>
+		<div>
+			<label for="password" class="form-label">Password</label>
+			<InputText @bind-bind-Value=user.Password></InputText>
+		</div>
+
+	</div>
+</EditForm>
+
+@code {
+	LoginModel user = new LoginModel();
+}
